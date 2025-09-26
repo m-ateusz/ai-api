@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Zapytaj Perplexity</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; margin: 2em; }
         form { display: flex; flex-direction: column; width: 400px; }
@@ -31,7 +32,9 @@
             });
             const data = await res.json();
             if (data.response) {
-                responseDiv.innerHTML = `<b>Odpowiedź:</b><br>${data.response}`;
+                responseDiv.innerHTML = `<b>Odpowiedź:</b><br><div id='md-render'></div>`;
+                document.getElementById('md-render').innerHTML = window.marked.parse(data.response);
+            
             } else {
                 responseDiv.innerHTML = `<b>Błąd:</b> ${data.error || 'Nieznany błąd.'}`;
             }

@@ -38,7 +38,13 @@ async def ask_perplexity(text: str = Form(...)):
             if r.status_code != 200:
                 return JSONResponse({"error": "Błąd API Perplexity.", "details": r.text}, status_code=500)
             data = r.json()
-            return {"response": data.get("choices", [{}])[0].get("message", {}).get("content", "Brak odpowiedzi.")}
+            choice = data.get("choices", [{}])[0]
+            message = choice.get("message", {})
+            urls = data.get("citations")
+            return {
+                "response": message.get("content", "Brak odpowiedzi."),
+                "urls": urls
+            }
     except Exception as e:
         return JSONResponse({"error": f"Błąd połączenia: {e}"}, status_code=500)
     except Exception as e:

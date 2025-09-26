@@ -32,8 +32,19 @@
             });
             const data = await res.json();
             if (data.response) {
+                let mdText = data.response;
+                // Zamień [1], [2], ... na linki jeśli są urls
+                if (data.urls && Array.isArray(data.urls)) {
+                  mdText = mdText.replace(/\[(\d+)\]/g, (match, number) => {
+                    const idx = parseInt(number, 10) - 1;
+                    if (data.urls[idx]) {
+                      return `<a href='${data.urls[idx]}' target='_blank'>[${number}]</a>`;
+                    }
+                    return match;
+                  });
+                }
                 responseDiv.innerHTML = `<b>Odpowiedź:</b><br><div id='md-render'></div>`;
-                document.getElementById('md-render').innerHTML = window.marked.parse(data.response);
+                document.getElementById('md-render').innerHTML = window.marked.parse(mdText);
             
             } else {
                 responseDiv.innerHTML = `<b>Błąd:</b> ${data.error || 'Nieznany błąd.'}`;

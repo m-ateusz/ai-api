@@ -28,6 +28,7 @@ async def ask_perplexity(text: str = Form(...)):
     payload = {
         "model": "sonar",
         "messages": [
+            {"role": "system", "content": "You are a translation assistant. Translate everything to English, aiming to use natural idioms and advanced, native-like language."},
             {"role": "user", "content": text}
         ]
     }

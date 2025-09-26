@@ -33,18 +33,28 @@
             const data = await res.json();
             if (data.response) {
                 let mdText = data.response;
+                const urls = data.urls || data.citations;
                 // Zamień [1], [2], ... na linki jeśli są urls
-                if (data.urls && Array.isArray(data.urls)) {
+                if (urls && Array.isArray(urls)) {
                   mdText = mdText.replace(/\[(\d+)\]/g, (match, number) => {
                     const idx = parseInt(number, 10) - 1;
-                    if (data.urls[idx]) {
-                      return `<a href='${data.urls[idx]}' target='_blank'>[${number}]</a>`;
+                    if (urls[idx]) {
+                      return `<a href='${urls[idx]}' target='_blank'>[${number}]</a>`;
                     }
                     return match;
                   });
                 }
-                responseDiv.innerHTML = `<b>Odpowiedź:</b><br><div id='md-render'></div>`;
+                responseDiv.innerHTML = `<b>Odpowiedź:</b><br><div id='md-render'></div><div id='ref-list'></div>`;
                 document.getElementById('md-render').innerHTML = window.marked.parse(mdText);
+                // Dodaj listę referencji jeśli są
+                if (urls && Array.isArray(urls) && urls.length > 0) {
+                  let refHtml = '<hr><b>Źródła:</b><ol style="margin-top:0.5em">';
+                  urls.forEach((url, idx) => {
+                    refHtml += `<li><a href='${url}' target='_blank'>[${idx+1}] ${url}</a></li>`;
+                  });
+                  refHtml += '</ol>';
+                  document.getElementById('ref-list').innerHTML = refHtml;
+                }
             
             } else {
                 responseDiv.innerHTML = `<b>Błąd:</b> ${data.error || 'Nieznany błąd.'}`;

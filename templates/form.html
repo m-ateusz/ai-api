@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zapytaj Perplexity</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        form { display: flex; flex-direction: column; width: 400px; }
+        textarea { margin-bottom: 1em; padding: 0.5em; font-size: 1em; }
+        button { padding: 0.7em; font-size: 1em; }
+        #response { margin-top: 2em; background: #f0f0f0; padding: 1em; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Zapytaj Perplexity (Sonar)</h1>
+    <form id="askForm">
+        <textarea name="text" rows="4" placeholder="Wpisz pytanie..." required></textarea>
+        <button type="submit">Wyślij</button>
+    </form>
+    <div id="response"></div>
+    <script>
+        const form = document.getElementById('askForm');
+        const responseDiv = document.getElementById('response');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            responseDiv.innerHTML = 'Czekaj...';
+            const formData = new FormData(form);
+            const res = await fetch('/api', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.response) {
+                responseDiv.innerHTML = `<b>Odpowiedź:</b><br>${data.response}`;
+            } else {
+                responseDiv.innerHTML = `<b>Błąd:</b> ${data.error || 'Nieznany błąd.'}`;
+            }
+        };
+    </script>
+</body>
+</html>
